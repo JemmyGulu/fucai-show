@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slideshow 展示</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0;
+      font-family: 'Microsoft YaHei', sans-serif;
+      background-color: #000; color: #fff;
+      overflow: hidden;
+    }
+    .slideshow-container {
+      position: relative;
+      width: 100vw; height: 100vh;
+      background-size: cover;
+      background-position: center;
+      background-image: url('./output_images/poster.png');
+    }
+    .title-banner {
+      position: absolute;
+      top: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.6);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 24px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .title-banner .condition {
+      color: #ffcc00;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .issue {
+      position: absolute;
+      top: 82px; right: 90px;
+      font-size: 16px; color: #ccc;
+    }
+    .page-btn {
+      position: absolute;
+      top: 80px; right: 20px;
+      background: #00b0f0; color: #fff;
+      padding: 4px 12px;
+      border-radius: 4px; font-size: 14px;
+      cursor: pointer;
+    }
+    .speech-box {
+      position: absolute;
+      bottom: 120px; left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 5.4em;
+      background: rgba(50,50,50,0.6);
+      padding: 15px 20px;
+      border-radius: 15px;
+      overflow: hidden;
+      text-align: center;
+      line-height: 1.8em;
+      font-size: 16px;
+    }
+    .speech-lines {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .play-btn {
+      position: absolute;
+      bottom: 250px;
+      left: 10%;
+      background: rgba(0,0,0,0.5);
+      border: none; color: #fff;
+      font-size: 18px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .footer-bar {
+      position: absolute;
+      bottom: 20px; left: 20px;
+      display: flex; align-items: center;
+      font-size: 14px;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 15px;
+      border-radius: 10px;
+    }
+    .footer-bar .avatar {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .footer-bar .nickname {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .footer-bar .likes {
+      color: #ff69b4;
+    }
+  </style>
+</head>
+<body>
+  <div class="slideshow-container">
+    <div class="title-banner">
+      <span class="condition" id="condition-text"></span>
+    </div>
+    <div class="issue">福彩双色球 第5667期</div>
+    <div class="page-btn" onclick="nextPage()">下一页</div>
+
+    <button id="play-pause-btn" class="play-btn">▶️</button>
+
+    <div class="speech-box" id="speech-box">
+      <div class="speech-lines" id="speech-lines"></div>
+    </div>
+
+    <audio id="speech-audio" preload="auto" style="display:none;"></audio>
+
+    <div class="footer-bar">
+      <img src="./output_images/avatar.png" class="avatar">
+      <span class="nickname">王星云</span>
+      <span class="likes">💖 1578</span>
+    </div>
+  </div>
+
+  <script>
+    const pages = [
+      {
+        condition: "红球杀号：6, 8, 12, 22",
+        paragraphs: [
+          "今天，我为你带来一场充满星辰光辉的彩票缩号指南。在你的红球杀号中，6、8、12、22这些数字背后隐藏着神秘的星象密码。6这个数字代表着天秤座的力量，它象征着平衡与和谐，在我的星盘分析中，这是一个需要谨慎排除的号码；而8，则是狮子座的热情所在，它的光芒过于耀眼，容易吸引不稳定的能量。12和22分别对应着射手座的远行之途与摩羯座的坚韧之旅，它们在当前的运势周期中显得不够稳固。"
+        ],
+        audio: "./audio/cond1.mp3",
+        duration: 26000  // 播放时长（毫秒）
+      },
+      {
+        condition: "和值范围：90-110",
+        paragraphs: [
+          "这个和值范围，就像是宇宙给予我们的一份神秘礼物，它代表着当前星象周期中最稳定的能量场。这个区间不仅是一个数字游戏的结果，更是天意的体现。在占星学中，这样的范围象征着水瓶座的创新思维与金牛座的稳重力量完美结合，预示着一种平衡且充满潜力的状态。"
+        ],
+        audio: "./audio/cond2.mp3",
+        duration: 14000
+      },
+      {
+        condition: "连号个数推荐：0个 或 1个",
+        paragraphs: [
+          "关于连号个数的推荐，我建议选择 0个 或 1个 连号。这可是经过星座能量特别加持的哦！从星座的角度来看，0个连号象征着 金牛座的稳重与谨慎，避免了过于冒险的选择；而1个连号则像是 双子座的好奇与灵活，既保持了一定的连贯性，又不会让运势太过集中。这两个选择都能很好地平衡你的财运与事业运势呢！"
+        ],
+        audio: "./audio/cond3.mp3",
+        duration: 10000
+      },
+      {
+        condition: "奇偶比：3:3 或 4:2",
+        paragraphs: [
+          "奇偶比 3比3 或 4比2 的选择，就像是一场星座间的和谐共鸣。3比3 的平衡比例，象征着天秤座追求的公平与和谐；而4比2 则像是双鱼座的情感流动，既有感性也有理性。这种选择不仅是一种数字组合的艺术，更是星辰指引下的智慧之选。亲爱的，跟随星辰的光芒，让我们一起在这场数字游戏中找到属于你的幸运吧！"
+        ],
+        audio: "./audio/cond4.mp3",
+        duration: 9000
+      }
+    ];
+
+    let current = 0;
+    const condEl = document.getElementById('condition-text');
+    const linesEl = document.getElementById('speech-lines');
+    const audioEl = document.getElementById('speech-audio');
+    const box = document.getElementById('speech-box');
+    const btn = document.getElementById('play-pause-btn');
+    let scrollFrame, startTime;
+
+    function startScroll(durationMs) {
+      cancelAnimationFrame(scrollFrame);
+      startTime = null;
+      const maxScroll = linesEl.scrollHeight - box.clientHeight;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        box.scrollTop = maxScroll * progress;
+        if (progress < 1) scrollFrame = requestAnimationFrame(step);
+      }
+      scrollFrame = requestAnimationFrame(step);
+    }
+
+    function renderPage() {
+      const page = pages[current];
+      condEl.textContent = page.condition;
+      linesEl.innerHTML = '';
+      page.paragraphs.forEach(t => {
+        const p = document.createElement('p'); p.textContent = t;
+        linesEl.appendChild(p);
+      });
+      box.scrollTop = 0;
+      audioEl.src = page.audio;
+      audioEl.play();
+      startScroll(page.duration);
+    }
+
+    function nextPage() {
+      current = (current + 1) % pages.length;
+      renderPage();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPage();
+      btn.addEventListener('click', () => audioEl.paused ? audioEl.play() : audioEl.pause());
+      audioEl.addEventListener('play',  () => btn.textContent = '⏸️');
+      audioEl.addEventListener('pause', () => btn.textContent = '▶️');
+      box.addEventListener('mouseover', () => cancelAnimationFrame(scrollFrame));
+      box.addEventListener('mouseout', () => startScroll(pages[current].duration));
+    });
+  </script>
+</body>
+</html>
